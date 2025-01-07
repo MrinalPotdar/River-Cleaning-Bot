@@ -1,0 +1,79 @@
+#define IN1 3
+#define IN2 5
+#define IN3 6
+#define IN4 11
+#define CONVEYOR1 9
+#define CONVEYOR2 8
+#define LEDP 4
+
+int command; // Variable to store app command state.
+int speed = 204; // Motor speed (0 - 255).
+int buttonState = 0;
+int lastButtonState = 0;
+int conveyorState = 0; // State of the conveyor belt.
+
+void setup() {
+    pinMode(IN1, OUTPUT);
+    pinMode(IN2, OUTPUT);
+    pinMode(IN3, OUTPUT);
+    pinMode(IN4, OUTPUT);
+    pinMode(CONVEYOR1, OUTPUT);
+    pinMode(CONVEYOR2, OUTPUT);
+    pinMode(LEDP, OUTPUT);
+
+    Serial.begin(9600); // Set the baud rate for Bluetooth module.
+}
+
+void loop() {
+    if (Serial.available() > 0) {
+        command = Serial.read();
+  Stop(); // Initialize with motors stopped.
+
+        switch (command) {
+            case 'F': forward(); break;
+            case 'B': back(); break;
+            case 'L': left(); break;
+            case 'R': right(); break;
+            case 'X': conveyorOn(); break;
+            case 'x': conveyorOff(); break;
+        }
+    }
+}
+
+void forward() {
+    analogWrite(IN1, speed);
+    analogWrite(IN3, speed);
+}
+
+void back() {
+    analogWrite(IN2, speed);
+    analogWrite(IN4, speed);
+}
+
+void left() {
+    analogWrite(IN3, speed);
+    analogWrite(IN2, speed);
+}
+
+void right() {
+    analogWrite(IN4, speed);
+    analogWrite(IN1, speed);
+}
+void Stop() {
+    analogWrite(IN1, 0);
+    analogWrite(IN2, 0);
+    analogWrite(IN3, 0);
+    analogWrite(IN4, 0);
+}
+
+void conveyorOn() {
+    digitalWrite(CONVEYOR1, HIGH);
+    digitalWrite(CONVEYOR2, HIGH);
+    conveyorState = 1;
+}
+
+void conveyorOff() {
+    digitalWrite(CONVEYOR1, LOW);
+    digitalWrite(CONVEYOR2, LOW);
+    conveyorState = 0;
+}
